@@ -33,16 +33,20 @@ jobs:
 
       - name: Set image tags
         id: image_tags
-        run: |   
+        run: |
+          REPO=oaftech.azurecr.io/oneacrefund
+          IMAGE=uptime-wrapper-api
+
           VERSION=$(echo ${GITHUB_REF#refs/tags/v} | sed 's/\//-/g')
-          echo "tags=${VERSION}" >> $GITHUB_OUTPUT
+          TAGS="${REPO}/${IMAGE}:v${VERSION},${REPO}/${IMAGE}:latest"
+          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v5.2.0
         with:
           file: ${{ github.workspace }}/Dockerfile
           push: true
-          tags: oaftech.azurecr.io/oneacrefund/uptime-wrapper-api:${{ steps.image_tags.outputs.tags }}
+          tags: ${{ steps.image_tags.outputs.tags }}
           context: ${{ github.workspace }}
 
  
