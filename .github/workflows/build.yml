@@ -33,16 +33,8 @@ jobs:
 
       - name: Set image tags
         id: image_tags
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-   
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            VERSION=$(echo ${GITHUB_REF#refs/tags/v} | sed 's/\//-/g')
-          else
-            echo "Error: Unexpected branch or tag"
-            exit 1
-          fi
-          
+        run: |   
+          VERSION=$(echo ${GITHUB_REF#refs/tags/v} | sed 's/\//-/g')
           echo "tags=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker images
