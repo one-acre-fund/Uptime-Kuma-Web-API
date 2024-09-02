@@ -4,6 +4,9 @@ from typing import List
 import secrets
 import logging
 import os
+from dotenv import load_dotenv
+
+load_dotenv() # take environment variables from .env.
 
 logger = logging.getLogger("gunicorn.error")
 fast_api_logger.handlers = logger.handlers

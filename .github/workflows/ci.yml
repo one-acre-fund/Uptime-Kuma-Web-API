@@ -1,0 +1,40 @@
+name: CI
+run-name: oaf-uptime-wrapper-${{ github.ref_name }}-${{ github.run_number }}
+
+on:
+  pull_request:
+    branches:
+      - main
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3.0.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.1.0
+
+      - name: AI Code Review
+        uses: freeedcom/ai-codereviewer@v2.7.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          exclude: "**/*.json, **/*.md"
+          
+      - name: run tests
+        run: |
+          # Start docker-compose in the background
+          docker compose up --detach
+
+          # Wait for n8n to be ready
+          nc -vz -w 20 localhost 3001
+          nc -vz -w 20 localhost 8000
+          
